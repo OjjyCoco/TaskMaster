@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type SubscriptionTier = 'basic' | 'premium' | null;
 
@@ -47,24 +48,29 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   const checkSubscription = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token
+
     if (!user) return;
-    
+  
     try {
       setLoading(true);
-      // Placeholder - will be replaced with actual Supabase edge function call
-      console.log("Checking subscription for user:", user.id);
-      
-      // Mock subscription data for development
-      const mockHasSubscription = localStorage.getItem('mockSubscription') === 'true';
-      
-      setSubscribed(mockHasSubscription);
-      if (mockHasSubscription) {
-        setSubscriptionTier('premium');
-        // Set subscription end to 30 days from now
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + 30);
-        setSubscriptionEnd(endDate.toISOString());
-      }
+  
+      const response = await fetch('https://kzkjeofueynaeelxstef.supabase.co/functions/v1/get-subscription-status', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId: user.id }),
+      });
+  
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch subscription');
+  
+      setSubscribed(data.active);
+      setSubscriptionTier(data.tier || null);
+      setSubscriptionEnd(data.end || null);
     } catch (error: any) {
       console.error("Failed to check subscription:", error);
       toast.error("Failed to verify subscription status");
@@ -72,26 +78,34 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
+  
 
   const createCheckoutSession = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token
+    
     if (!user) {
       toast.error("Please log in to subscribe");
       return null;
     }
-    
+  
     try {
       setLoading(true);
-      // Placeholder - will be replaced with actual Supabase edge function call
-      console.log("Creating checkout session for user:", user.id);
-      
-      // Mock checkout for development
-      localStorage.setItem('mockSubscription', 'true');
-      
-      // In real implementation, this would return a Stripe checkout URL
-      toast.success("Subscription activated (development mode)");
-      await checkSubscription();
-      
-      return '/success'; // Simulate redirect URL
+  
+      const response = await fetch('https://kzkjeofueynaeelxstef.supabase.co/functions/v1/create-checkout-session', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId: user.id }),
+      });
+  
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to create session');
+  
+      window.location.href = data.url; // Redirect to Stripe checkout
+      return data.url;
     } catch (error: any) {
       console.error("Failed to create checkout session:", error);
       toast.error("Failed to start subscription process");
@@ -100,22 +114,34 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
+  
 
   const createCustomerPortalSession = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token
+    
     if (!user) {
       toast.error("Please log in to manage your subscription");
       return null;
     }
-    
+  
     try {
       setLoading(true);
-      // Placeholder - will be replaced with actual Supabase edge function call
-      console.log("Creating customer portal session for user:", user.id);
-      
-      // In real implementation, this would return a Stripe customer portal URL
-      toast.success("Customer portal accessed (development mode)");
-      
-      return '#'; // Simulate redirect URL
+  
+      const response = await fetch('https://kzkjeofueynaeelxstef.supabase.co/functions/v1/create-portal-session', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId: user.id }),
+      });
+  
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to create portal session');
+  
+      window.location.href = data.url; // Redirect to Stripe portal
+      return data.url;
     } catch (error: any) {
       console.error("Failed to create customer portal session:", error);
       toast.error("Failed to access subscription management");
@@ -124,6 +150,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
+  
 
   return (
     <SubscriptionContext.Provider value={{ 

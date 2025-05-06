@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.dom"]
+  },
+  "imports": {
+    "stripe": "https://esm.sh/stripe@12.15.0"
+  }
+}
