@@ -98,7 +98,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ userId: user.id }),
+        body: JSON.stringify({ userEmail: user.email }),
       });
   
       const data = await response.json();

@@ -5,9 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { Link, useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 
 const PricingPage = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { createCheckoutSession, subscribed, loading } = useSubscription();
   const navigate = useNavigate();
 
@@ -33,9 +34,23 @@ const PricingPage = () => {
           </Link>
           <nav className="space-x-4">
             {user ? (
-              <Button variant="outline" onClick={() => navigate("/dashboard")}>
-                Dashboard
-              </Button>
+              <div className="flex items-center space-x-4">
+                <Button variant="outline" onClick={() => navigate("/dashboard")}>
+                  Dashboard
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center"
+                  onClick={() => {
+                    signOut();
+                    navigate("/");
+                  }}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
             ) : (
               <div className="space-x-2">
                 <Link to="/login">
