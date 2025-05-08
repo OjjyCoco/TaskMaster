@@ -38,66 +38,71 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Event Type:', event.type);
-    console.log('Event Data:', JSON.stringify(event.data, null, 2));
+    console.log('Event Type:', event.type)
+    console.log('Event Data:', JSON.stringify(event.data, null, 2))
 
-    if (
-      event.type === 'checkout.session.completed' ||
-      event.type === 'invoice.paid' ||
-      event.type === 'invoice.payment_succeeded' ||
-      event.type === 'customer.subscription.updated' ||
-      event.type === 'customer.subscription.created'
-    ) {
-      const subscription = event.data.object
+    switch (event.type) {
+      // case 'checkout.session.completed':
+      // case 'invoice.paid':
+      // case 'invoice.payment_succeeded':
+      // case 'customer.subscription.updated':
+      case 'customer.subscription.created': {
+        const subscription = event.data.object
+        console.log("subscription: ", subscription)
 
-      // Check if current_period_end is present
-      const currentPeriodEndTimestamp = subscription.current_period_end
-      console.log('current_period_end timestamp:', currentPeriodEndTimestamp)
+        const currentPeriodEndTimestamp = subscription.items?.data?.[0]?.current_period_end
+        console.log('current_period_end timestamp:', currentPeriodEndTimestamp)
 
-      if (!currentPeriodEndTimestamp || isNaN(currentPeriodEndTimestamp)) {
-        console.warn('No valid current_period_end found, skipping update.')
-        return new Response('current_period_end missing or invalid', { status: 200 })
+        if (!currentPeriodEndTimestamp || isNaN(currentPeriodEndTimestamp)) {
+          console.warn('No valid current_period_end found, skipping update.')
+          return new Response('current_period_end missing or invalid', { status: 200 })
+        }
+
+        const currentPeriodEnd = new Date(currentPeriodEndTimestamp * 1000).toISOString()
+        const customerId = subscription.customer
+        const priceId = subscription.items?.data?.[0]?.price?.id
+
+        if (!subscription.items?.data || !subscription.items.data[0]?.price) {
+          console.warn('Price ID missing or malformed in subscription items.')
+          return new Response('Price ID missing or malformed', { status: 200 })
+        }
+
+        const { data: customerMapping, error } = await supabase
+          .from('customers')
+          .select('user_id')
+          .eq('customer_id', customerId)
+          .single()
+
+        if (error || !customerMapping) {
+          console.error('User not found for customer ID:', customerId)
+          throw new Error('User not found for customer ID: ' + customerId)
+        }
+
+        console.log('Customer Mapping:', customerMapping)
+
+        const { error: upsertError } = await supabase.from('subscriptions').upsert({
+          user_id: customerMapping.user_id,
+          status: subscription.status,
+          price_id: priceId,
+          current_period_end: currentPeriodEnd,
+        })
+
+        if (upsertError) {
+          console.error('Error upserting subscription:', upsertError.message)
+          return new Response('Error upserting subscription', { status: 500 })
+        }
+
+        console.log('Subscription upserted successfully for user:', customerMapping.user_id)
+        break
       }
 
-      const currentPeriodEnd = new Date(currentPeriodEndTimestamp * 1000).toISOString()
+      // You can add additional cases here for future handling:
+      // case 'customer.deleted':
+      //   break;
 
-      const customerId = subscription.customer
-      const priceId = subscription.items?.data?.[0]?.price?.id
-
-      // Ensure that subscription.items.data exists and is properly formatted
-      if (!subscription.items?.data || !subscription.items.data[0]?.price) {
-        console.warn('Price ID missing or malformed in subscription items.')
-        return new Response('Price ID missing or malformed', { status: 200 })
-      }
-
-      // Find the user_id associated with this customer
-      const { data: customerMapping, error } = await supabase
-        .from('customers')
-        .select('user_id')
-        .eq('customer_id', customerId)
-        .single()
-
-      if (error || !customerMapping) {
-        console.error('User not found for customer ID:', customerId)
-        throw new Error('User not found for customer ID: ' + customerId)
-      }
-
-      console.log('Customer Mapping:', customerMapping)
-
-      // Upsert subscription info
-      const { error: upsertError } = await supabase.from('subscriptions').upsert({
-        user_id: customerMapping.user_id,
-        status: subscription.status,
-        price_id: priceId,
-        current_period_end: currentPeriodEnd,
-      })
-
-      if (upsertError) {
-        console.error('Error upserting subscription:', upsertError.message)
-        return new Response('Error upserting subscription', { status: 500 })
-      }
-
-      console.log('Subscription upserted successfully for user:', customerMapping.user_id)
+      // default:
+      //   console.log('Unhandled event type:', event.type)
+      //   break
     }
 
     return new Response('Webhook processed', { status: 200 })
@@ -106,3 +111,4 @@ serve(async (req) => {
     return new Response('Internal error', { status: 500 })
   }
 })
+
