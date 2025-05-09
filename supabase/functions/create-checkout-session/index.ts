@@ -49,16 +49,29 @@ serve(async (req) => {
     const { userEmail } = await req.json()
     console.log("userEmail: ", userEmail)
 
-    // Create customer if needed
-    const customer = await stripe.customers.create({
-      email: userEmail
+    // First, check if a customer already exists
+    const existingCustomers = await stripe.customers.search({
+      query: `email:"${userEmail}"`
     })
 
-    // Store customer_id <-> user_id in Supabase
-    await supabase.from('customers').upsert({
-      user_id: user.id,
-      customer_id: customer.id,
-    })
+    let customer
+
+    if (existingCustomers.data.length > 0) {
+      customer = existingCustomers.data[0]
+      console.log("Existing customer found:", customer.id)
+    } else {
+      customer = await stripe.customers.create({
+        email: userEmail
+      })
+      console.log("New customer created:", customer.id)
+
+      // Store customer_id <-> user_id in Supabase only if new
+      await supabase.from('customers').upsert({
+        user_id: user.id,
+        customer_id: customer.id,
+      })
+    }
+
 
     const session = await stripe.checkout.sessions.create({
       success_url: 'http://localhost:8080/dashboard',
