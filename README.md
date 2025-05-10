@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="TaskMasterLogo.png" alt="TaskMaster Logo" width="250"/>
-</p>
-
 # 📝 TaskMaster – SaaS To-Do List App with Auth & Payments
 
 TaskMaster is a simple yet fully functional To-Do List (TDL) web application built with **Vite.js** (React), featuring:
