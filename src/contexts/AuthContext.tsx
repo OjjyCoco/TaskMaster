@@ -65,7 +65,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (data.user) {
         setUser({ id: data.user.id, email: data.user.email });
         toast.success("Successfully signed in!");
+        return true;
       }
+
+      return false;
     } catch (error: any) {
       setError(error.message || "Failed to sign in");
       toast.error("Failed to sign in");
@@ -87,7 +90,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (data.user) {
         setUser({ id: data.user.id, email: data.user.email });
         toast.success("Account created successfully!");
+        return true;
       }
+
+      return false;
     } catch (error: any) {
       setError(error.message || "Failed to sign up");
       toast.error("Failed to create account");
