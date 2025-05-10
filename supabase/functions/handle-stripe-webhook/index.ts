@@ -41,73 +41,6 @@ serve(async (req) => {
     console.log('Event Data:', JSON.stringify(event.data, null, 2))
 
     switch (event.type) {
-      // case 'customer.subscription.created': {
-
-      //   const subscription = event.data.object
-      //   if (!subscription.items?.data?.length) {
-      //     return new Response('No items in subscription', { status: 400 })
-      //   }
-      //   const customerId = subscription.customer
-
-      //   const { data: customerMapping, error } = await supabase
-      //     .from('customers')
-      //     .select('user_id')
-      //     .eq('customer_id', customerId)
-      //     .single()
-
-      //   if (error || !customerMapping) {
-      //     console.error('User not found for customer ID:', customerId)
-      //     throw new Error('User not found for customer ID: ' + customerId)
-      //   }
-
-      //   const userId = customerMapping.user_id
-      //   const priceId = subscription.items?.data?.[0]?.price?.id
-
-      //   const currentPeriodEndTimestamp = subscription.items?.data?.[0]?.current_period_end
-      //   const currentPeriodEnd = currentPeriodEndTimestamp
-      //     ? new Date(currentPeriodEndTimestamp * 1000).toISOString()
-      //     : null
-
-      //   await supabase.from('subscriptions').upsert({
-      //     user_id: userId,
-      //     price_id: priceId,
-      //     status: subscription.status,
-      //     current_period_end: currentPeriodEnd,
-      //   })
-
-      //   console.log('Subscription created or updated.')
-      //   break
-      // }
-
-      // case 'invoice.paid': {
-
-      //   const subscription = event.data.object
-      //   if (!subscription.items?.data?.length) {
-      //     return new Response('No items in subscription', { status: 400 })
-      //   }
-      //   const customerId = subscription.customer
-
-      //   const { data: customerMapping, error } = await supabase
-      //     .from('customers')
-      //     .select('user_id')
-      //     .eq('customer_id', customerId)
-      //     .single()
-
-      //   if (error || !customerMapping) {
-      //     console.error('User not found for customer ID:', customerId)
-      //     throw new Error('User not found for customer ID: ' + customerId)
-      //   }
-
-      //   const userId = customerMapping.user_id
-
-      //   await supabase
-      //     .from('subscriptions')
-      //     .update({ status: 'active' })
-      //     .eq('user_id', userId)
-
-      //   console.log('Subscription activated on invoice payment.')
-      //   break
-      // }
 
       case 'customer.subscription.updated': {
 
@@ -136,14 +69,6 @@ serve(async (req) => {
           ? new Date(currentPeriodEndTimestamp * 1000).toISOString()
           : null
 
-        // await supabase
-        //   .from('subscriptions')
-        //   .update({
-        //     status: subscription.status,
-        //     current_period_end: currentPeriodEnd,
-        //   })
-        //   .eq('user_id', userId)
-
         await supabase.from('subscriptions').upsert({
           user_id: userId,
           price_id: priceId,
@@ -154,36 +79,6 @@ serve(async (req) => {
         console.log('Subscription updated.')
         break
       }
-
-      // case 'customer.subscription.deleted': {
-
-      //   const subscription = event.data.object
-      //   if (!subscription.items?.data?.length) {
-      //     return new Response('No items in subscription', { status: 400 })
-      //   }
-      //   const customerId = subscription.customer
-
-      //   const { data: customerMapping, error } = await supabase
-      //     .from('customers')
-      //     .select('user_id')
-      //     .eq('customer_id', customerId)
-      //     .single()
-
-      //   if (error || !customerMapping) {
-      //     console.error('User not found for customer ID:', customerId)
-      //     throw new Error('User not found for customer ID: ' + customerId)
-      //   }
-
-      //   const userId = customerMapping.user_id
-
-      //   await supabase
-      //     .from('subscriptions')
-      //     .update({ status: 'canceled' })
-      //     .eq('user_id', userId)
-
-      //   console.log('Subscription canceled.')
-      //   break
-      // }
 
       case 'customer.deleted': {
 
