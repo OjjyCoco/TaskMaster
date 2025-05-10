@@ -2,6 +2,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 const Index = () => {
   const { user } = useAuth();
@@ -21,11 +22,23 @@ const Index = () => {
           </div>
           <nav className="space-x-4">
             {user ? (
-              <div className="space-x-2">
+              <div className="flex items-center space-x-4">
                 <Link to="/pricing" className="text-gray-600 hover:text-brand">Pricing</Link>
                 <Link to="/dashboard">
                   <Button>Go to Dashboard</Button>
                 </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center"
+                  onClick={() => {
+                    signOut();
+                    navigate("/");
+                  }}
+                >
+                <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
               </div>
             ) : (
               <div className="space-x-2">

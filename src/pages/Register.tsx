@@ -28,8 +28,10 @@ const Register = () => {
     
     if (!validatePassword()) return;
     
-    await signUp(email, password);
-    navigate("/pricing");
+    const success = await signUp(email, password);
+    if (success) {
+      navigate("/pricing");
+    }
   };
 
   return (

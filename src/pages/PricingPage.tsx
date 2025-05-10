@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { Link, useNavigate } from "react-router-dom";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { LogOut, Settings } from "lucide-react";
 
 const PricingPage = () => {
@@ -47,7 +47,7 @@ const PricingPage = () => {
                     navigate("/");
                   }}
                 >
-                  <LogOut className="h-4 w-4 mr-2" />
+                <LogOut className="h-4 w-4 mr-2" />
                   Sign Out
                 </Button>
               </div>
@@ -87,16 +87,20 @@ const PricingPage = () => {
               <CardContent>
                 <ul className="space-y-3">
                   <li className="flex items-center">
-                    <Check className="mr-2 h-5 w-5 text-green-500" />
-                    <span>Up to 10 tasks</span>
+                    <X className="mr-2 h-5 w-5 text-red-500"/>
+                    <span>Unlimited tasks</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="mr-2 h-5 w-5 text-green-500" />
+                    <X className="mr-2 h-5 w-5 text-red-500"/>
                     <span>Basic task management</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="mr-2 h-5 w-5 text-green-500" />
+                    <X className="mr-2 h-5 w-5 text-red-500"/>
                     <span>Mobile access</span>
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="mr-2 h-5 w-5 text-green-500" />
+                    <span>You should consider to subscribe</span>
                   </li>
                 </ul>
               </CardContent>

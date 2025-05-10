@@ -14,8 +14,10 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signIn(email, password);
-    navigate("/dashboard");
+    const success = await signIn(email, password);
+    if (success) {
+      navigate("/pricing");
+    }
   };
 
   return (

@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import LoadingSpinner from './LoadingSpinner';
+import { toast } from "sonner";
 
 type ProtectedRouteProps = {
   children: ReactNode;
@@ -25,6 +26,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   
   // If authenticated but not subscribed, redirect to pricing page
   if (!subscribed) {
+    toast.error("You must subscribe to access the app");
     return <Navigate to="/pricing" replace />;
   }
   
