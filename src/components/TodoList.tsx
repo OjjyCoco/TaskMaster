@@ -1,46 +1,103 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Todo } from "@/types/todo";
 import TodoItem from "./TodoItem";
 import { Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const TodoList = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
 
-  const addTodo = () => {
+  // fetch todos from Supabase on load
+  // It does not fetch other users todos thanks to the "Read own todos only" Supabase RLS policy on the todos table
+  useEffect(() => {
+    const fetchTodos = async () => {
+      const { data, error } = await supabase
+        .from("todos")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching todos:", error.message);
+      } else {
+        setTodos(data || []);
+      }
+    };
+
+    fetchTodos();
+  }, []);
+
+  // insert todos to Supabase
+  const addTodo = async () => {
     if (newTodo.trim()) {
-      const todo: Todo = {
-        id: Date.now().toString(),
-        text: newTodo.trim(),
-        completed: false,
-        createdAt: new Date().toISOString(),
-      };
-      setTodos([...todos, todo]);
-      setNewTodo("");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("todos")
+        .insert({
+          text: newTodo.trim(),
+          completed: false,
+          user_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error adding todo:", error.message);
+      } else {
+        setTodos([data, ...todos]);
+        setNewTodo("");
+      }
     }
   };
 
-  const toggleComplete = (id: string) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  const toggleComplete = async (id: string) => {
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
+
+    const { data, error } = await supabase
+      .from("todos")
+      .update({ completed: !todo.completed })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error toggling todo:", error.message);
+    } else {
+      setTodos(todos.map((t) => (t.id === id ? data : t)));
+    }
   };
 
-  const deleteTodo = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const deleteTodo = async (id: string) => {
+    const { error } = await supabase.from("todos").delete().eq("id", id);
+    if (error) {
+      console.error("Error deleting todo:", error.message);
+    } else {
+      setTodos(todos.filter((t) => t.id !== id));
+    }
   };
 
-  const editTodo = (id: string, newText: string) => {
-    setTodos(
-      todos.map((todo) => (todo.id === id ? { ...todo, text: newText } : todo))
-    );
+  const editTodo = async (id: string, newText: string) => {
+    const { data, error } = await supabase
+      .from("todos")
+      .update({ text: newText })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error editing todo:", error.message);
+    } else {
+      setTodos(todos.map((t) => (t.id === id ? data : t)));
+    }
   };
+
 
   return (
     <Card className="w-full max-w-3xl mx-auto">
