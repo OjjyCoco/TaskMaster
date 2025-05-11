@@ -37,7 +37,7 @@ serve(async (req) => {
 
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: 'http://localhost:8080/dashboard',
+      return_url: 'https://task-master-blond-five.vercel.app/dashboard',
     })
 
     return new Response(JSON.stringify({ url: session.url }), {
