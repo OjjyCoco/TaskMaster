@@ -26,7 +26,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   
   // If authenticated but not subscribed, redirect to pricing page
   if (!subscribed) {
-    toast.error("You must subscribe to access the app");
     return <Navigate to="/pricing" replace />;
   }
   

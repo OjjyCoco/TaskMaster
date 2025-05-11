@@ -66,9 +66,9 @@ const Index = () => {
               A simple, intuitive to-do list application to help you stay organized and productive.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 animate-slide-in" style={{ animationDelay: "0.2s" }}>
-              <Link to="/register">
+              <Link to="/login">
                 <Button size="lg" className="w-full sm:w-auto">
-                  Get Started for Free
+                  Get Started
                 </Button>
               </Link>
               <Link to="/pricing">
@@ -128,7 +128,7 @@ const Index = () => {
           </p>
           <Link to="/register">
             <Button variant="secondary" size="lg">
-              Start Your Free Trial
+              Start Your Journey
             </Button>
           </Link>
         </div>

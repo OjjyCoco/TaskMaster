@@ -170,6 +170,10 @@ const PricingPage = () => {
           <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
           <div className="max-w-3xl mx-auto space-y-8">
             <div>
+              <h3 className="text-xl font-semibold mb-2">How can I test the App with a fake card ?</h3>
+              <p className="text-gray-600">As TaskMaster is in dev mode, you can actually subscribe using a testing card and get the Premium Plan. When testing interactively, use a card number, such as 4242 4242 4242 4242. Use a valid future date, such as 12/34. Use any three-digit CVC. Use any value you like for other form fields.</p>
+            </div>
+            <div>
               <h3 className="text-xl font-semibold mb-2">How does billing work?</h3>
               <p className="text-gray-600">You'll be charged monthly for the Premium plan. You can cancel anytime and your subscription will remain active until the end of the billing period.</p>
             </div>
@@ -179,7 +183,7 @@ const PricingPage = () => {
             </div>
             <div>
               <h3 className="text-xl font-semibold mb-2">Is there a free trial?</h3>
-              <p className="text-gray-600">We offer a 7-day free trial for the Premium plan so you can test out all the features before committing.</p>
+              <p className="text-gray-600">No.</p>
             </div>
             <div>
               <h3 className="text-xl font-semibold mb-2">How secure is my data?</h3>
