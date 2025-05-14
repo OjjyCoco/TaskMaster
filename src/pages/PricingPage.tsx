@@ -70,7 +70,8 @@ const PricingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h1 className="text-4xl font-bold mb-4">Simple, Transparent Pricing</h1>
-            <p className="text-xl text-gray-600">Choose the plan that's right for you.</p>
+            {/* <p className="text-xl text-gray-600">Choose the plan that's right for you.</p> */}
+            <p className="text-xl text-gray-600">As TaskMaster is in development mode, you can actually subscribe with a testing card and get the Premium Plan. When subscribing, use a card number, such as 4242 4242 4242 4242. Use a valid future date, such as 12/34. Use any three-digit CVC. Use any value you like for other form fields. This will let you subscribe without using your personal card details.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
