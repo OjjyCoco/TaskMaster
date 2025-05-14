@@ -72,6 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error: any) {
       setError(error.message || "Failed to sign in");
       toast.error("Failed to sign in");
+      return false;
     } finally {
       setLoading(false);
     }
@@ -97,6 +98,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error: any) {
       setError(error.message || "Failed to sign up");
       toast.error("Failed to create account");
+      return false;
     } finally {
       setLoading(false);
     }

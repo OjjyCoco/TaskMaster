@@ -1,9 +1,9 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Login = () => {
@@ -16,7 +16,9 @@ const Login = () => {
     e.preventDefault();
     const success = await signIn(email, password);
     if (success) {
-      navigate("/pricing");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 100);
     }
   };
 

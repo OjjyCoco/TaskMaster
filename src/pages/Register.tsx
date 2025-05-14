@@ -25,12 +25,12 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validatePassword()) return;
-    
     const success = await signUp(email, password);
     if (success) {
-      navigate("/pricing");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 100);
     }
   };
 
