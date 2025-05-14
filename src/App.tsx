@@ -19,6 +19,8 @@ import CancelPage from "./pages/CancelPage";
 import ForgotPassword from "./pages/forgot-password";
 import UpdatePassword from "./pages/update-password";
 import ProtectedPage from "./pages/protected";
+import EmailConfirmPage from "./pages/email-confirm";
+import VerifyReminderPage from "./pages/verify-reminder";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
               <Route path="/forgot" element={<ForgotPassword />} />
               <Route path="/update" element={<UpdatePassword />} />
               <Route path="/protected" element={<ProtectedPage />} />
+              <Route path="/email-confirm" element={<EmailConfirmPage />} />
+              <Route path="/verify-reminder" element={<VerifyReminderPage />} />
               <Route 
                 path="/dashboard" 
                 element={

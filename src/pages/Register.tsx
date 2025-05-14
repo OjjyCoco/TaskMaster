@@ -40,7 +40,7 @@ const Register = () => {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
           <CardDescription className="text-center">
-            Enter your email and create a password to get started
+            Enter your email and create a password to get started. You'll need to verify your email before accessing the app.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -101,6 +101,10 @@ const Register = () => {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Create account"}
             </Button>
+            <div className="text-xs text-center text-gray-500 mt-2">
+              By signing up, you'll receive a verification email. 
+              You must verify your email address before accessing the app.
+            </div>
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link to="/login" className="font-medium text-brand hover:underline">

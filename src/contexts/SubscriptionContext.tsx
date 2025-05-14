@@ -49,7 +49,6 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   const checkSubscription = async () => {
     const { data: { session } } = await supabase.auth.getSession()
-    console.log("data:", session)
     const token = session?.access_token
 
     if (!user) return;
@@ -89,7 +88,6 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   const createCheckoutSession = async () => {
     const { data: { session } } = await supabase.auth.getSession()
-    console.log("data:", data)
     const token = session?.access_token
     
     if (!user) {

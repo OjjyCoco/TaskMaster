@@ -11,7 +11,7 @@ type ProtectedRouteProps = {
 };
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isEmailVerified } = useAuth();
   const { subscribed, loading: subscriptionLoading } = useSubscription();
   
   // Show loading spinner while checking authentication and subscription
@@ -23,13 +23,18 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+
+  // If authenticated but email not verified, redirect to verification reminder
+  if (!isEmailVerified()) {
+    return <Navigate to="/verify-reminder" replace />;
+  }
   
   // If authenticated but not subscribed, redirect to pricing page
   if (!subscribed) {
     return <Navigate to="/pricing" replace />;
   }
   
-  // User is authenticated and subscribed, show the protected content
+  // User is authenticated, email verified, and subscribed, show the protected content
   return <>{children}</>;
 };
 

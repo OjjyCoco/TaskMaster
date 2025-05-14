@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 export type User = {
   id: string;
   email: string;
+  email_confirmed_at?: string;
 } | null;
 
 type AuthContextType = {
@@ -16,6 +17,8 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resendVerificationEmail: (email: string) => Promise<void>;
+  isEmailVerified: () => boolean;
   error: string | null;
 };
 
@@ -25,6 +28,8 @@ const AuthContext = createContext<AuthContextType>({
   signIn: async () => {},
   signUp: async () => {},
   signOut: async () => {},
+  resendVerificationEmail: async () => {},
+  isEmailVerified: () => false,
   error: null
 });
 
@@ -38,12 +43,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // This effect initialize the auth state from Supabase
   useEffect(() => {
     const session = supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ? { id: session.user.id, email: session.user.email } : null);
+      setUser(session?.user ? { 
+        id: session.user.id, 
+        email: session.user.email,
+        email_confirmed_at: session.user.email_confirmed_at || undefined
+      } : null);
       setLoading(false);
     });
   
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ? { id: session.user.id, email: session.user.email } : null);
+      setUser(session?.user ? { 
+        id: session.user.id, 
+        email: session.user.email,
+        email_confirmed_at: session.user.email_confirmed_at || undefined
+      } : null);
     });
   
     return () => {
@@ -63,7 +76,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (error) throw error;
   
       if (data.user) {
-        setUser({ id: data.user.id, email: data.user.email });
+        setUser({
+          id: data.user.id,
+          email: data.user.email,
+          email_confirmed_at: data.user.email_confirmed_at || undefined
+        });
         toast.success("Successfully signed in!");
         return true;
       }
@@ -84,13 +101,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
   
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/email-confirm`,
+        },
+      });
   
       if (error) throw error;
   
       if (data.user) {
-        setUser({ id: data.user.id, email: data.user.email });
-        toast.success("Account created successfully!");
+        setUser({
+          id: data.user.id,
+          email: data.user.email,
+          email_confirmed_at: data.user.email_confirmed_at || undefined
+        });
+        toast.success("Account created successfully! Please check your email to verify your account.");
         return true;
       }
 
@@ -124,8 +151,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
   
 
+  // Function to resend verification email
+  const resendVerificationEmail = async (email: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/email-confirm`,
+        },
+      });
+
+      if (error) throw error;
+      
+      toast.success("Verification email sent! Please check your inbox.");
+      return true;
+    } catch (error: any) {
+      setError(error.message || "Failed to send verification email");
+      toast.error("Failed to send verification email");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to check if email is verified
+  const isEmailVerified = () => {
+    console.log("user.email_confirmed_at:", user.email_confirmed_at)
+    console.log(user)
+    return !!user?.email_confirmed_at;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, error }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, resendVerificationEmail, isEmailVerified, error }}>
       {children}
     </AuthContext.Provider>
   );
