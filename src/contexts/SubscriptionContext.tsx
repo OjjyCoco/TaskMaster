@@ -49,6 +49,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   const checkSubscription = async () => {
     const { data: { session } } = await supabase.auth.getSession()
+    console.log("data:", session)
     const token = session?.access_token
 
     if (!user) return;
@@ -73,7 +74,13 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       setSubscriptionEnd(data.end || null);
     } catch (error: any) {
       console.error("Failed to check subscription:", error);
-      toast.error("Failed to verify subscription status");
+      console.log("JWT:", token);
+
+      if (error.message === "Invalid JWT") {
+        toast.error("Your session has expired. Please sign out and in again.");
+      } else {
+        toast.error("Failed to verify subscription status");
+      }
     } finally {
       setLoading(false);
     }
@@ -82,6 +89,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   const createCheckoutSession = async () => {
     const { data: { session } } = await supabase.auth.getSession()
+    console.log("data:", data)
     const token = session?.access_token
     
     if (!user) {
@@ -108,7 +116,13 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       return data.url;
     } catch (error: any) {
       console.error("Failed to create checkout session:", error);
-      toast.error("Failed to start subscription process");
+      console.log("JWT:", token);
+
+      if (error.message === "Invalid JWT") {
+        toast.error("Your session has expired. Please sign out and in again.");
+      } else {
+        toast.error("Failed to start subscription process");
+      }
       return null;
     } finally {
       setLoading(false);
