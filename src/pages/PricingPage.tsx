@@ -20,7 +20,8 @@ const PricingPage = () => {
 
     const checkoutUrl = await createCheckoutSession();
     if (checkoutUrl) {
-      navigate(checkoutUrl);
+      // navigate(checkoutUrl); this line gave a 404 error before entering the Stripe checkout session
+      window.open(checkoutUrl, '_self');
     }
   };
 

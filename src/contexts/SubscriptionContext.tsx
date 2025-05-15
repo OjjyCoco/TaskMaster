@@ -110,7 +110,6 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Failed to create session');
   
-      window.location.href = data.url; // Redirect to Stripe checkout
       return data.url;
     } catch (error: any) {
       console.error("Failed to create checkout session:", error);
@@ -151,8 +150,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Failed to create portal session');
-  
-      window.location.href = data.url; // Redirect to Stripe portal
+      
       return data.url;
     } catch (error: any) {
       console.error("Failed to create customer portal session:", error);

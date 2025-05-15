@@ -20,7 +20,7 @@ const Dashboard = () => {
   const handleManageSubscription = async () => {
     const portalUrl = await createCustomerPortalSession();
     if (portalUrl) {
-      window.location.href = portalUrl;
+      window.open(portalUrl, '_blank');
     }
   };
 
