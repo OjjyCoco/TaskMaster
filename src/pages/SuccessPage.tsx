@@ -15,8 +15,11 @@ const SuccessPage = () => {
     // When landing on success page, verify the subscription status
     if (user) {
       checkSubscription();
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 5000);
     }
-  }, [user]);
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">

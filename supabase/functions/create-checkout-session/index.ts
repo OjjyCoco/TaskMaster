@@ -74,10 +74,10 @@ serve(async (req) => {
 
 
     const session = await stripe.checkout.sessions.create({
-      success_url: 'https://task-master-blond-five.vercel.app/dashboard',
-      cancel_url: 'https://task-master-blond-five.vercel.app/pricing',
-      // success_url: 'http://localhost:8080/dashboard',
-      // cancel_url: 'http://localhost:8080/pricing',
+      success_url: 'https://task-master-blond-five.vercel.app/success',
+      cancel_url: 'https://task-master-blond-five.vercel.app/cancel',
+      // success_url: 'http://localhost:8080/success',
+      // cancel_url: 'http://localhost:8080/cancel',
       mode: 'subscription',
       customer: customer.id,
       customer_update: {
