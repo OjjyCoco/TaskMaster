@@ -5,13 +5,16 @@ import { useSubscription } from "@/contexts/SubscriptionContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import TodoList from "@/components/TodoList";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Settings, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   const { subscriptionTier, subscriptionEnd, createCustomerPortalSession } = useSubscription();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     document.title = "Dashboard | TaskMaster";
@@ -25,7 +28,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50"> {/* <-- Changed line */}
+    <div className="flex flex-col min-h-screen bg-gray-50">
 
       {/* Header */}
       <header className="bg-white shadow">
@@ -33,30 +36,64 @@ const Dashboard = () => {
           <div className="flex items-center space-x-2">
             <Link to="/" className="text-2xl font-bold text-brand">TaskMaster</Link>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-600">{user?.email}</div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center"
-              onClick={handleManageSubscription}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Manage Subscription
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center"
-              onClick={() => {
-                signOut();
-                navigate("/");
-              }}
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
+          {isMobile ? (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Menu">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] flex flex-col">
+                <div className="flex flex-col gap-4 py-4 mt-8">
+                  <div className="text-sm text-gray-600 font-medium py-2 border-b pb-4 mb-2">{user?.email}</div>
+                  <Button
+                    variant="outline"
+                    className="flex items-center justify-start py-2"
+                    onClick={handleManageSubscription}
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Manage Subscription
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center justify-start py-2"
+                    onClick={() => {
+                      signOut();
+                      navigate("/");
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-600">{user?.email}</div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center"
+                onClick={handleManageSubscription}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Manage Subscription
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center"
+                onClick={() => {
+                  signOut();
+                  navigate("/");
+                }}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          )}
         </div>
       </header>
 

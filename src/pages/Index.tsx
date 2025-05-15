@@ -2,12 +2,15 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -22,35 +25,80 @@ const Index = () => {
               TaskMaster
             </Link>
           </div>
-          <nav className="space-x-4">
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <Link to="/pricing" className="text-gray-600 hover:text-brand">Pricing</Link>
-                <Link to="/dashboard">
-                  <Button>Go to Dashboard</Button>
-                </Link>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center"
-                  onClick={() => {
-                    signOut();
-                    navigate("/");
-                  }}
-                >
-                <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </div>
+          <nav>
+            {isMobile ? (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Menu">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px] flex flex-col">
+                  <div className="flex flex-col gap-4 py-4 mt-8">
+                    {user ? (
+                      <>
+                        <Link to="/pricing" className="text-gray-600 hover:text-brand py-2 font-medium">Pricing</Link>
+                        <Link to="/dashboard" className="py-2">
+                          <Button className="w-full">Go to Dashboard</Button>
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          className="flex items-center justify-start py-2"
+                          onClick={() => {
+                            signOut();
+                            navigate("/");
+                          }}
+                        >
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Sign Out
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Link to="/pricing" className="text-gray-600 hover:text-brand py-2 font-medium">Pricing</Link>
+                        <Link to="/login" className="py-2">
+                          <Button variant="outline" className="w-full">Log In</Button>
+                        </Link>
+                        <Link to="/register" className="py-2">
+                          <Button className="w-full">Sign Up</Button>
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
             ) : (
-              <div className="space-x-2">
-                <Link to="/pricing" className="text-gray-600 hover:text-brand">Pricing</Link>
-                <Link to="/login">
-                  <Button variant="outline">Log In</Button>
-                </Link>
-                <Link to="/register">
-                  <Button>Sign Up</Button>
-                </Link>
+              <div className="space-x-4">
+                {user ? (
+                  <div className="flex items-center space-x-4">
+                    <Link to="/pricing" className="text-gray-600 hover:text-brand">Pricing</Link>
+                    <Link to="/dashboard">
+                      <Button>Go to Dashboard</Button>
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center"
+                      onClick={() => {
+                        signOut();
+                        navigate("/");
+                      }}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-x-2">
+                    <Link to="/pricing" className="text-gray-600 hover:text-brand">Pricing</Link>
+                    <Link to="/login">
+                      <Button variant="outline">Log In</Button>
+                    </Link>
+                    <Link to="/register">
+                      <Button>Sign Up</Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
           </nav>

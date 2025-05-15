@@ -5,12 +5,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { Link, useNavigate } from "react-router-dom";
 import { Check, X } from "lucide-react";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Settings, Menu } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const PricingPage = () => {
   const { user, signOut } = useAuth();
   const { createCheckoutSession, subscribed, loading } = useSubscription();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const handleSubscribe = async () => {
     if (!user) {
@@ -33,36 +36,78 @@ const PricingPage = () => {
           <Link to="/" className="flex items-center space-x-2">
             <span className="text-2xl font-bold text-brand">TaskMaster</span>
           </Link>
-          <nav className="space-x-4">
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <Button variant="outline" onClick={() => navigate("/dashboard")}>
-                  Dashboard
+          {isMobile ? (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Menu">
+                  <Menu className="h-5 w-5" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center"
-                  onClick={() => {
-                    signOut();
-                    navigate("/");
-                  }}
-                >
-                <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <div className="space-x-2">
-                <Link to="/login">
-                  <Button variant="outline">Log In</Button>
-                </Link>
-                <Link to="/register">
-                  <Button>Sign Up</Button>
-                </Link>
-              </div>
-            )}
-          </nav>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] flex flex-col">
+                <div className="flex flex-col gap-4 py-4 mt-8">
+                  {user ? (
+                    <>
+                      <div className="text-sm text-gray-600 font-medium py-2 border-b pb-4 mb-2">{user?.email}</div>
+                      <Button variant="outline" className="w-full justify-start" onClick={() => navigate("/dashboard")}>
+                        Dashboard
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="flex items-center justify-start py-2"
+                        onClick={() => {
+                          signOut();
+                          navigate("/");
+                        }}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" className="py-2">
+                        <Button variant="outline" className="w-full">Log In</Button>
+                      </Link>
+                      <Link to="/register" className="py-2">
+                        <Button className="w-full">Sign Up</Button>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <nav className="space-x-4">
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <Button variant="outline" onClick={() => navigate("/dashboard")}>
+                    Dashboard
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center"
+                    onClick={() => {
+                      signOut();
+                      navigate("/");
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-x-2">
+                  <Link to="/login">
+                    <Button variant="outline">Log In</Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button>Sign Up</Button>
+                  </Link>
+                </div>
+              )}
+            </nav>
+          )}
         </div>
       </header>
 
