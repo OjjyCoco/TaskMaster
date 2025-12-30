@@ -2,6 +2,8 @@
 
 TaskMaster is a simple yet fully functional To-Do List (TDL) web application built with **Vite.js** (React), featuring:
 
+> ⚠️ Please note that this project has been paused by Supabase because it was inactive, so authentication is no longer available.
+ 
 - ✅ **User Authentication** via [Supabase](https://supabase.com)
 - 💳 **Premium Subscription System** via [Stripe](https://stripe.com)
 - 🗂️ **User-specific persistent data storage**
